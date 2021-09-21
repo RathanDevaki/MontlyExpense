@@ -1,7 +1,4 @@
-import 'package:demo_app/widgets/new_transaction.dart';
-
-import './widgets/transaction_list.dart';
-import 'package:demo_app/widgets/transaction_list.dart';
+import './widgets/user_transaction.dart';
 import 'package:flutter/material.dart';
 
 // You can use a relative import, i.e. `import 'category_route.dart;'` or
@@ -53,8 +50,17 @@ class DemoPage extends MyApp {
   Widget build(BuildContext context) {
     // var _url =    'https://www.filmibeat.com/wimg/desktop/2018/05/ajith-kumar_152541220310.jpg';
     return Scaffold(
-      body: Card(
-        elevation: 8.0,
+      body: Container(
+        height: 500,
+        width: double.infinity,
+        child: ListView(
+          children: <Widget>[
+            Card(
+              elevation: 8.0,
+            ),
+            UserTransactios(),
+          ],
+        ),
       ),
     );
   }

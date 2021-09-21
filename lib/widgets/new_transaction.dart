@@ -1,10 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 class NewTransaction extends StatelessWidget {
+  final Function addTx;
   final titleController = TextEditingController();
   final nameController = TextEditingController();
+  NewTransaction(this.addTx);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,7 +26,7 @@ class NewTransaction extends StatelessWidget {
           controller: nameController,
           decoration: InputDecoration(
             focusColor: Colors.redAccent,
-            labelText: 'Name',
+            labelText: 'Amount',
           ),
           autocorrect: true,
           keyboardType: TextInputType.number,
@@ -34,10 +35,14 @@ class NewTransaction extends StatelessWidget {
             //nameInput = val;
           },
         ),
-        FlatButton(
-          color: Colors.amberAccent,
+        ElevatedButton(
+          // color: Colors.amberAccent,
           onPressed: () {
-            log(titleController.text);
+            // log(titleController.text);
+            addTx(
+              titleController.text,
+              double.parse(nameController.text),
+            );
           },
           child: Text(
             'Submit',
