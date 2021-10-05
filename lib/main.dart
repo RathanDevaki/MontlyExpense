@@ -1,41 +1,92 @@
-import './widgets/user_transaction.dart';
+import 'package:demo_app/widgets/chart.dart';
+import 'package:demo_app/widgets/new_transaction.dart';
+import 'package:demo_app/widgets/transaction_list.dart';
+import 'package:flutter/cupertino.dart';
+import './widgets/new_transaction.dart';
+import './widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
+import './widgets/chart.dart';
+import 'models/transaction.dart';
 
-// You can use a relative import, i.e. `import 'category_route.dart;'` or
-// a package import, as shown below.
-// More details at http://dart-lang.github.io/linter/lints/avoid_relative_lib_imports.html
-
-/// The function that is called when main.dart is run.
 void main() {
   runApp(MyApp());
 }
 
-/// This widget is the root of our application.
-///
-/// The first screen we see is a list [Categories], each of which
-/// has a list of [Unit]s.
 class MyApp extends StatelessWidget {
-  // final List<Transaction> transactions = [] ;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
-      title: 'My Trials',
-
-      home: DemoPage(),
-      // CategoryRoute(),
+      title: 'Expenses',
+      theme: ThemeData(
+        fontFamily: 'QuickSand',
+        primarySwatch: Colors.lime,
+        errorColor: Colors.amberAccent,
+        appBarTheme: Theme.of(context).appBarTheme,
+      ),
+      home: MyHomePage(),
     );
   }
 }
 
-class DemoPage extends MyApp {
-  //const ({ Key? key }) : super(key: key);
-  // static const _textStyle = TextStyle(fontSize: 40, color: Colors.blueAccent);
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-  final titleController = TextEditingController();
-  final nameController = TextEditingController();
+class _MyHomePageState extends State<MyHomePage> {
+  final List<Transaction> _userTransaction = [
+    // Transaction(
+    //   id: 't1',
+    //   title: 'bike',
+    //   amount: 46.46,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: 't2',
+    //   title: 'mobile',
+    //   amount: 45.46,
+    //   date: DateTime.now(),
+    // ),
+  ];
+
+  List<Transaction> get _recentTransactions {
+    return _userTransaction.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
+
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      builder: (_) {
+        return GestureDetector(
+          onTap: () {},
+          child: NewTransaction(_addNewTransaction),
+          behavior:
+              HitTestBehavior.opaque, //it catch event to avoid on tap close
+        );
+      },
+    );
+  }
+
+  void _addNewTransaction(String txTitle, double amount, DateTime choosenDate) {
+    final newTx = Transaction(
+      title: txTitle,
+      amount: amount,
+      date: choosenDate,
+      id: amount.toString(),
+    );
+    setState(() {
+      _userTransaction.add(newTx);
+    });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      _userTransaction.removeWhere((tx) => tx.id == id);
+    });
+  }
 
   final ButtonStyle flatButtonStyle = TextButton.styleFrom(
     primary: Colors.black87,
@@ -48,19 +99,34 @@ class DemoPage extends MyApp {
 
   @override
   Widget build(BuildContext context) {
-    // var _url =    'https://www.filmibeat.com/wimg/desktop/2018/05/ajith-kumar_152541220310.jpg';
     return Scaffold(
+      appBar: AppBar(
+        title: Text('MyExpenses'),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () => _startAddNewTransaction(context),
+              icon: Icon(
+                CupertinoIcons.add,
+                color: Colors.white,
+                semanticLabel: 'Add',
+              ))
+        ],
+      ),
       body: Container(
         height: 500,
         width: double.infinity,
         child: ListView(
+          padding: EdgeInsets.all(4.0),
           children: <Widget>[
-            Card(
-              elevation: 8.0,
-            ),
-            UserTransactios(),
+            Chart(_recentTransactions),
+            TransactionList(_userTransaction, _deleteTransaction),
           ],
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
       ),
     );
   }
