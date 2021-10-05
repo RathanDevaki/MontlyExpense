@@ -1,4 +1,4 @@
-# demo_app
+# Monthly Expense app using Flutter
 
 A new Flutter application.
 
